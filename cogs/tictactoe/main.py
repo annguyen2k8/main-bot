@@ -1,3 +1,5 @@
+# NOTE: PUT IT IN TRASH PLEASE!!!
+
 import os
 import asyncio
 import random
