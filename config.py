@@ -1,3 +1,6 @@
 import os
-token = os.environ['token-main-bot']
+from dotenv import load_dotenv, dotenv_values 
+load_dotenv() 
+
+token = os.getenv('TOKEN')
 command_prefix = ('s!')
