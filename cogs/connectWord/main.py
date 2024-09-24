@@ -67,15 +67,6 @@ class connectWord(commands.Cog):
                     WORDS_USED(
                         word STR,
                         guildID INT
-                    );
-                    
-                    CREATE TABLE IF NOT EXISTS
-                    USERS(
-                        userID INT,
-                        guildID INT,
-                        exp INT,
-                        UNIQUE(userID, guildID)
-                    );
                     
                     CREATE TRIGGER IF NOT EXISTS after_insert_channels
                     AFTER INSERT ON CHANNELS
@@ -171,24 +162,6 @@ class connectWord(commands.Cog):
                     )
             await db.commit()
     
-    async def add_exp(self, guildID:int, userID:int, exp:int=0) -> None:
-        async with aiosqlite.connect(self.file_db) as db:
-            async with db.cursor() as cursor:
-                await cursor.execute(
-                    """
-                    INSERT INTO USERS (guildID, userID, exp)
-                    VALUES (?, ?, ?)
-                    ON CONFLICT(userID, guildID) DO UPDATE
-                    SET exp = exp + ? WHERE guildID = ?;
-                    """,
-                    (guildID, userID, exp, exp, guildID)
-                    )
-            
-            await db.commit()
-    
-    async def get_top(self, guidID:int) -> list[tuple[int, int]]:
-        ...
-    
     @commands.Cog.listener()
     async def on_message(self, message:discord.Message) -> None:
         if message.author.bot:
@@ -233,9 +206,8 @@ class connectWord(commands.Cog):
             return
     
         userID = message.author.id
-        await self.set_last(guildID, userID, time.time(), word[-1])
-        await self.add_exp(guildID, userID, 10)
         
+        await self.set_last(guildID, userID, time.time(), word[-1])
         await message.add_reaction('✅')
     
     @commands.hybrid_command(name='start_connectword', description='Start mini-game connect word')
@@ -255,9 +227,6 @@ class connectWord(commands.Cog):
         await message.add_reaction('🔥')
         await message.add_reaction('🧠')
     
-    @commands.hybrid_command(name='top', description='Show top board.')
-    async def top(self, ctx: commands.Context) -> None:
-        ...
 
 """
 NOTE: PLEASE PUT IT IN TRASH AS SOON AS WELL
