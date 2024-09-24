@@ -1,7 +1,7 @@
 .env
-/cogs/connectWord
-/cogs/tictactoe
-/cogs/ping-mc
-/__pycache__
-/cogs/*/__pycache__
-/database
+cogs/connectWord
+cogs/tictactoe
+cogs/ping-mc
+__pycache__
+cogs/*/__pycache__
+database
