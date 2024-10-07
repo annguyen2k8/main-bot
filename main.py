@@ -1,6 +1,10 @@
-from discord.ext import commands    
+from discord.ext import commands
 from discord import app_commands
 import discord
+
+from discord.ext.ipc.server import Server
+from discord.ext.ipc.objects import ClientPayload
+from discord.ext.ipc.errors import *
 
 import os
 import asyncio
@@ -10,8 +14,6 @@ from datetime import datetime
 from config import *
 
 os.system('cls' if os.name == 'nt' else 'clear')
-
-
 
 logger = logging.getLogger('discord') 
 logger.setLevel(logging.INFO) 
@@ -25,15 +27,37 @@ handler.setFormatter(
 
 logger.addHandler(handler)
 
-bot = commands.Bot(
+class MyBot(commands.Bot):
+    def __init__(self, *args, **kwargs):
+        commands.Bot.__init__(self, *args, **kwargs)
+        self.ipc = Server(self, secret_key='WUT')
+
+bot = MyBot(
     command_prefix=command_prefix,
     intents=discord.Intents.all(), 
     help_command=None
     )
 
 @bot.event
-async def on_ready():
-    global handler
+async def on_ipc_ready() -> None:
+    logger = logging.getLogger('discord.ipc') 
+    logger.info('IPC server is ready!')
+
+@bot.event
+async def on_ipc_error(endpoint, error):
+    logger = logging.getLogger('discord.ipc.error') 
+    logger.info(f"{endpoint} raise {error}")
+
+@bot.ipc.route()
+async def test(bot: commands.Bot, data:ClientPayload) -> dict:
+    print(data)
+    print('someone get!')
+    return {
+        "id": bot.application.owner.id
+    }
+
+@bot.event
+async def on_ready() -> None:
     logger = logging.getLogger('discord.on_ready') 
     logger.info(f'Ping {round(bot.latency * 1000)}ms')
     logger.info(f"Logged bot's {bot.user} (ID: {bot.application.id})")
@@ -99,6 +123,8 @@ async def load_cogs():
 async def main():
     async with bot:
         await load_cogs()
-        await bot.start(token=token)
+        await bot.ipc.start()
+        await bot.start(token=BOT_TOKEN)
 
-asyncio.run(main()) 
+if __name__ == '__main__':
+    asyncio.run(main()) 
