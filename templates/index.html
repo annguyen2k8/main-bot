@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<style>
+        
+    @import url('https://fonts.googleapis.com/css?family=Jersey+10');
+    
+    .main {
+        
+        background-image        : url('../assets/img/wallpaper.gif');
+        background-size         : cover;
+        background-repeat       : no-repeat;
+        background-attachment   : fixed; 
+        background-position: center center;
+        width: 100%;
+        height: 100vh;
+        position: fixed;
+        display: flex;
+        justify-content: center;
+    }
+    .main::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: flex;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+        opacity: .5;
+        z-index: -1;
+    }
+
+    .main h1 {
+        font-family: "Jersey 10";
+        color: white;
+        letter-spacing: 2px;
+        padding: auto;
+    }
+    .button-a {
+        float: top;
+        text-decoration: none;
+        text-align: center;
+        align-items: center;
+        border-radius: 15px;
+        background-color: rgba(0, 0, 0, 0);
+        padding: 5px 10px 5px 10px;
+        font-family: "Jersey 10";
+        font-size: 30px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.75);
+    }
+    .button-a:active{
+        background-color: rgba(255, 255, 255, 0.75);
+        color: rgba(0, 0, 0, 0.75);
+    }
+    .button-a:hover {
+        border-style: solid;
+        border-color: rgba(255, 255, 255, 0.75);
+    }
+</style>
+
+<div class="main">
+    <div style="padding-top: 100px;">
+        <h1 style="font-size: 100px;">Welcome to Dashboard !</h1>
+        <br>
+        {% if not user%}
+        <a href="login/" class="button-a">
+            Login to manage
+        </a>
+        {% else %}
+        <a href="servers/" class="button-a">
+            Go to manage
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
