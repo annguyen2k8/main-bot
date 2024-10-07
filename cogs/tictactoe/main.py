@@ -43,9 +43,40 @@ class TicTacToeButton(ui.Button['TicTacToe']):
         if state in (view.X, view.O):
             return
         
+        if view.turn == view.X:
+            self.style = discord.ButtonStyle.secondary
+            self.label = '❌'
+            self.disabled = True
+            view.board[self.y][self.x] = view.X
+            view.turn = view.O
         
+        else:
+            self.style = discord.ButtonStyle.secondary
+            self.label = '⭕'
+            self.disabled = True
+            view.board[self.y][self.x] = view.O
+            view.turn = view.X
+        
+        status = view.check_status()
+        if status == view.Tie:
+            view.stop()
+            return
+        else:
+            await interaction.response.send_message(
+                embed=discord.Embed(
+                    title="Tic Tac Toe!",
+                    description=f"**<@{view.players[status]}> win!**"
+                )
+            )
+            
+            for child in view.children:
+                child.disabled = True
+            view.stop()
+            
+            return
 
-class TicTacToe(ui.view):
+
+class TicTacToe(ui.View):   
     childen = list[TicTacToeButton]
     name:str = __qualname__
     limit:int = 2
@@ -59,8 +90,8 @@ class TicTacToe(ui.view):
         players = random.shuffle(players)
         
         self.players = {
-            players[0]:self.O,
-            players[1]:self.X
+            self.O:players[0],
+            self.X:players[1],
         }
         
         self.turn = self.X
@@ -168,7 +199,7 @@ class QueueView(ui.View):
         channel = interaction.channel
         await channel.send(''.join([f'<@{id}>' for id in self.players]))
         
-        game = self.game(self.players)
+        game = self.game(players=self.players)
         await game.start(channel)
 
 async def setup(bot: commands.Bot) -> None:

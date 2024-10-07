@@ -67,6 +67,7 @@ class connectWord(commands.Cog):
                     WORDS_USED(
                         word STR,
                         guildID INT
+                    );
                     
                     CREATE TRIGGER IF NOT EXISTS after_insert_channels
                     AFTER INSERT ON CHANNELS
